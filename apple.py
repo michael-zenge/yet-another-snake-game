@@ -2,7 +2,6 @@
 #   https://medium.com/@robsonsampaio90/snake-game-in-python-with-pygame-291f5206a35e
 
 import pygame
-from pygame.locals import *
 import random
 
 class Apple():
