@@ -4,15 +4,15 @@
 import pygame
 import random
 
-class Apple():
+class Apple:
 
     def __init__(self):
-        self.apple = pygame.Surface((10, 10))
-        self.apple.fill((255, 0,0 ))
-        self.position = (0, 0)
-    
-    def set_random_position(self, screen_size):
-        self.position = (random.randrange(0, screen_size-10, 10), random.randrange(0, screen_size-10, 10))
+        self.position = (0,0)
+        self.image = pygame.Surface((10, 10))
+        self.image.fill((255, 0,0 ))
+        
+    def reset(self, screen_size):
+        self.position = (random.randrange(0, screen_size[0]-10, 10), random.randrange(0, screen_size[1]-10, 10))
         print(self.position)
 
 # Copyright (c) 2024 michael-zenge, permission granted under MIT license

@@ -9,64 +9,62 @@ import pygame
 from snake import *
 from apple import *
 
-class SnakeApp():
+class SnakeApp:
     """Create a single-window Snake app"""
     
-    def __init__(self):
+    def __init__(self, size, speed):
         """Initialize pygame and the application"""
         pygame.init()
-        self.screen = pygame.display.set_mode((400,400))
-        self.clock = pygame.time.Clock()
+
+        # Set private attributes
+        self.__screen = pygame.display.set_mode(size)
+        self.__speed = speed # framerate in fps
+             
+        self.__snake = Snake()
+        self.__apple = Apple()
+        self.__apple.reset(self.__screen.get_size())
+
+        self.__is_running = True # MZE: Why define as an attribute here?
     
-        self.snake = Snake()
-        self.apple = Apple()
-        self.apple.set_random_position(400)
-
-        self.is_running = True
-        self.speed = 10
-
     def run(self):
         """Run the main event loop."""
-        while self.is_running:
-            self.clock.tick(self.speed)
-            self.snake.crawl()
+        while self.__is_running:
+            pygame.time.Clock().tick(self.__speed) # framerate in fps
+            self.__snake.crawl()
     
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    is_running = False
+                    self.__is_running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP and self.snake.direction != DOWN:
-                        print("UP")
-                        self.snake.direction = UP                
-                    elif event.key == pygame.K_LEFT and self.snake.direction != RIGHT:
-                        print("LEFT")
-                        self.snake.direction = LEFT                
-                    elif event.key == pygame.K_DOWN and self.snake.direction != UP:
-                        print("DOWN")
-                        self.snake.direction = DOWN                
-                    elif event.key == pygame.K_RIGHT and self.snake.direction != LEFT:
-                        print("RIGHT")
-                        self.snake.direction = RIGHT
+                    self.__snake.direction = event.key
+                    if event.key == pygame.K_UP:
+                        print("UP")                        
+                    elif event.key == pygame.K_LEFT:
+                        print("LEFT")                        
+                    elif event.key == pygame.K_DOWN:
+                        print("DOWN")                        
+                    elif event.key == pygame.K_RIGHT:
+                        print("RIGHT")                        
     
-            if self.snake.wall_collision(400) or self.snake.self_collision():
-                self.is_running  = False
+            if self.__snake.wall_collision(400) or self.__snake.self_collision():
+                self.__is_running  = False
 
-            if self.snake.snake_eat_apple(self.apple.position):
-                self.apple.set_random_position(400)
-                self.snake.snake_bigger()
-                self.speed += 0.5
+            if self.__snake.snake_eat_apple(self.__apple.position):
+                self.__apple.reset(self.__screen.get_size())
+                self.__snake.snake_bigger()
+                self.__speed += 0.5
     
-            self.screen.fill((0,0,0))
-            for snake_pos in self.snake.snake[0:-1]:
-                self.screen.blit(self.snake.skin, snake_pos)
-            self.screen.blit(self.snake.head, self.snake.snake[-1])
-            self.screen.blit(self.apple.apple, self.apple.position)
+            self.__screen.fill((0,0,0))
+            for snake_pos in self.__snake.snake[0:-1]:
+                self.__screen.blit(self.__snake.skin, snake_pos)
+            self.__screen.blit(self.__snake.head, self.__snake.snake[-1])
+            self.__screen.blit(self.__apple.image, self.__apple.position)
 
             pygame.display.update()
 
         pygame.quit()
 
 if __name__ == '__main__':
-    SnakeApp().run()
+    SnakeApp((400, 400), 10).run()
 
 # Copyright (c) 2024 michael-zenge, permission granted under MIT license
