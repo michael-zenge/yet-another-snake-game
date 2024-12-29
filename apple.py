@@ -1,25 +1,37 @@
-# Following this tutorial to implement a snake game:
-#   https://medium.com/@robsonsampaio90/snake-game-in-python-with-pygame-291f5206a35e
-
+# Yet Another Snake Game
 import pygame
 import random
 
 class Apple:
-
-    def __init__(self, sprite_size, screen_size):
+    def __init__(self, sprite_size, apple_color):
         self.__sprite_size = sprite_size
-        self.__screen_size = screen_size
-                
-        self.image = pygame.Surface(self.__sprite_size)
-        self.image.fill((255, 0,0 ))
+        self.__apple_color = pygame.color.Color(apple_color)
 
-        self.position = (0,0)
-        
+        self.__screen = pygame.display.get_surface()
+        self.__screen_size = self.__screen.get_size()
+
+        # Create sprite object
+        self.__image = pygame.Surface(self.__sprite_size)
+        self.__image.fill(self.__apple_color)
+
+        self.__position = (0,0)
+        self.reset()
+
+    def do(self, event_key):
+        pass
+
+    def draw(self):
+        self.__screen.blit(self.__image, self.__position)
+
+    def update(self):
+        # Reset position if eaten by snake
+        if self.__screen.get_at(self.__position) != self.__apple_color:
+            self.reset()
+        return True
         
     def reset(self):
         pos_x = random.randrange(0, self.__screen_size[0]-self.__sprite_size[0], self.__sprite_size[0])
         pos_y = random.randrange(0, self.__screen_size[1]-self.__sprite_size[1], self.__sprite_size[1])
-        self.position = (pos_x, pos_y)
-        print(self.position)
+        self.__position = (pos_x, pos_y)
 
 # Copyright (c) 2024 michael-zenge, permission granted under MIT license
