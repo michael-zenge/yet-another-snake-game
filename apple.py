@@ -1,11 +1,12 @@
-# Yet Another Snake Game
+# Yet Another Snake Game feat. Q-Learning by Michael Zenge
 import pygame
 import random
 
 class Apple:
-    def __init__(self, sprite_size, apple_color):
+    def __init__(self, sprite_size, apple_color='red', random_seed:int=None):
         self._sprite_size = sprite_size
         self._apple_color = pygame.color.Color(apple_color)
+        self._random_seed = random_seed # to be used for testing
 
         self._screen = pygame.display.get_surface()
         self._screen_size = self._screen.get_size()
@@ -29,15 +30,16 @@ class Apple:
         pass
 
     def draw(self):
-        self._screen.blit(self._image, self._position)
+        self._screen.blit(self._image, self.position)
 
     def update(self):
         # Reset position if eaten by snake
-        if self._screen.get_at(self._position) != self._apple_color:
+        if self._screen.get_at(self.position) != self.color:
             self.reset()
         return True
         
     def reset(self):
+        random.seed(self._random_seed)
         pos_x = random.randrange(2*self._sprite_size[0], self._screen_size[0]-2*self._sprite_size[0], self._sprite_size[0])
         pos_y = random.randrange(2*self._sprite_size[1], self._screen_size[1]-2*self._sprite_size[1], self._sprite_size[1])
         self._position = (pos_x, pos_y)
