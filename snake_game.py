@@ -14,28 +14,28 @@ class SnakeApp:
         pygame.init()        
         
         # Set private attributes
-        self.__sprite_size = (32,32)
-        self.__screen_size = (20*self.__sprite_size[0], 16*self.__sprite_size[1])
+        self._sprite_size = (32,32)
+        self._screen_size = (20*self._sprite_size[0], 16*self._sprite_size[1])
         
-        self.__screen = pygame.display.set_mode(self.__screen_size)
+        self._screen = pygame.display.set_mode(self._screen_size)
         
-        self.__bkgrd_color = pygame.color.Color('lemonchiffon')
-        self.__wall_color = pygame.color.Color('dimgrey')
-        self.__apple_color = pygame.color.Color('red')
-        self.__head_color = pygame.color.Color('darkgreen')
-        self.__body_color = pygame.color.Color('green')
+        self._bkgrd_color = pygame.color.Color('lemonchiffon')
+        self._wall_color = pygame.color.Color('dimgrey')
+        self._apple_color = pygame.color.Color('red')
+        self._head_color = pygame.color.Color('darkgreen')
+        self._body_color = pygame.color.Color('green')
                 
-        self.__sprites = []
-        self.__sprites.append(Apple(self.__sprite_size, self.__apple_color)) # add apple first to avoid drawing over snake
-        self.__sprites.append(Snake(self.__sprite_size, self.__head_color, self.__body_color, self.__apple_color, self.__wall_color, 5, 0.0))
+        self._sprites = []
+        self._sprites.append(Apple(self._sprite_size, self._apple_color)) # add apple first to avoid drawing over snake
+        self._sprites.append(Snake(self._sprite_size, self._head_color, self._body_color, self._apple_color, self._wall_color, 5, 0.0))
     
-        self.__env = SnakeQLearning(self.__sprites[0], self.__sprites[1])        
-        self.__learning = True
+        self._env = SnakeQLearning(self._sprites[0], self._sprites[1])        
+        self._learning = True
         
-        self.__running = True
-        self.__updating = True        
+        self._running = True
+        self._updating = True        
 
-        if not self.__learning:
+        if not self._learning:
             pygame.display.set_caption("Yet Another Snake Game")
         else:
             pygame.display.set_caption("Yet Another Snake Game (Q-Learning)")
@@ -43,7 +43,7 @@ class SnakeApp:
     def run(self):
         """Run the main event loop."""        
         self.draw()
-        while self.__running:
+        while self._running:
             for event in pygame.event.get():
                 self.do(event)
             self.update()            
@@ -52,48 +52,48 @@ class SnakeApp:
     def do(self, event):
         match event.type:
             case pygame.QUIT:
-                  self.__running = False
+                  self._running = False
                   pygame.quit() # does not exit the program, safe to call more than once
             case pygame.KEYDOWN:
                 match event.key:
                     case pygame.K_SPACE:                
-                        self.__updating = not self.__updating
+                        self._updating = not self._updating
                     case pygame.K_ESCAPE:
-                        self.__running = False
+                        self._running = False
                         pygame.quit() # does not exit the program, safe to call more than once
                     case _:
-                        if not self.__learning: # do not accept keyboard input
-                            for sprite in self.__sprites:
+                        if not self._learning: # do not accept keyboard input
+                            for sprite in self._sprites:
                                 sprite.do(event.key)
 
     def update(self):
-        if self.__running and self.__updating:            
-            if self.__learning:
-                self.__env.update()
+        if self._running and self._updating:            
+            if self._learning:
+                self._env.update()
             
-            for sprite in self.__sprites:
+            for sprite in self._sprites:
                 success = sprite.update()                    
-                if not success and not self.__learning:
-                    self.__running = False
+                if not success and not self._learning:
+                    self._running = False
                     pygame.quit() # does not exit the program, safe to call more than once
                     break
             
             self.draw()
 
-            if self.__learning:
-                self.__env.reward()
+            if self._learning:
+                self._env.reward()
 
     def draw(self):
-        if self.__running and self.__updating:
+        if self._running and self._updating:
             # Q-learning requires wall thickness = 2 * size of sprite
-            bkgrd_coord = (2*self.__sprite_size[0], 2*self.__sprite_size[1])
-            bkgrd_size = (self.__screen_size[0]-4*self.__sprite_size[0], self.__screen_size[1]-4*self.__sprite_size[1])
+            bkgrd_coord = (2*self._sprite_size[0], 2*self._sprite_size[1])
+            bkgrd_size = (self._screen_size[0]-4*self._sprite_size[0], self._screen_size[1]-4*self._sprite_size[1])
 
-            self.__screen.fill(self.__wall_color)
+            self._screen.fill(self._wall_color)
             screen_bkgrd = pygame.Rect(bkgrd_coord, bkgrd_size)
-            pygame.draw.rect(self.__screen, self.__bkgrd_color, screen_bkgrd)
+            pygame.draw.rect(self._screen, self._bkgrd_color, screen_bkgrd)
 
-            for sprite in self.__sprites:
+            for sprite in self._sprites:
                 sprite.draw()
                
             pygame.display.update()
