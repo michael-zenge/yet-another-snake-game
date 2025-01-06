@@ -6,8 +6,7 @@ class Apple:
     def __init__(self, sprite_size, apple_color='red', random_seed:int=None):
         self._sprite_size = sprite_size
         self._apple_color = pygame.color.Color(apple_color)
-        self._random_seed = random_seed # to be used for testing
-
+        
         self._screen = pygame.display.get_surface()
         self._screen_size = self._screen.get_size()
 
@@ -16,7 +15,7 @@ class Apple:
         self._image.fill(self._apple_color)
 
         self._position = (0,0)
-        self.reset()
+        self.reset(random_seed) # random seed used for testing
 
     @property
     def color(self):
@@ -38,8 +37,8 @@ class Apple:
             self.reset()
         return True
         
-    def reset(self):
-        random.seed(self._random_seed)
+    def reset(self, random_seed:int=None):
+        random.seed(random_seed)
         pos_x = random.randrange(2*self._sprite_size[0], self._screen_size[0]-2*self._sprite_size[0], self._sprite_size[0])
         pos_y = random.randrange(2*self._sprite_size[1], self._screen_size[1]-2*self._sprite_size[1], self._sprite_size[1])
         self._position = (pos_x, pos_y)

@@ -8,18 +8,19 @@ import pygame
 
 from apple import *
 
-class test_apple(unittest.TestCase):
-    def __init__(self, module_name='test_apple'):
-        super().__init__(module_name)
-
-        self._random_seed = 1000
-
+class test_apple(unittest.TestCase):        
+    def setUp(self):        
         self._sprite_size = (16,16)
         self._screen_size = (20*self._sprite_size[0], 16*self._sprite_size[1])        
         self._screen = pygame.display.set_mode(self._screen_size)
 
+        self._random_seed = 1000
         self._default_color = 'red'
-        self._ref_position = (240,192)        
+        self._ref_position = (240,192) # position if initialized with random seed = 1000 
+        return super().setUp()
+    
+    def tearDown(self):
+        return super().tearDown()
 
     def test_color(self):
         """Test selection of supported color formats"""        
@@ -64,17 +65,30 @@ class test_apple(unittest.TestCase):
         self.assertEqual(self._screen.get_at(apple.position), apple.color)
 
     def test_update(self):
-        """Test whether position of apple is updated and function returns true"""
+        """Test whether position of apple is updated"""
         apple = Apple(self._sprite_size, self._default_color, self._random_seed)
-        success = apple.update()        
-        self.assertEqual(apple.position, self._ref_position)
+        
+        apple.draw()        
+        success = apple.update()
+
+        # Function always returns 'True'
         self.assertTrue(success)
+        # Position shall match reference position, no update
+        self.assertEqual(apple.position, self._ref_position)
+        
+        self._screen.set_at(apple.position, 'black')
+        success = apple.update()
+
+        # Function always returns 'True'
+        self.assertTrue(success)
+        # New position shall differ from reference position
+        self.assertNotEqual(apple.position, self._ref_position)
 
     def test_reset(self):
         """Test whether position is properly reset"""
         apple = Apple(self._sprite_size, self._default_color, self._random_seed)
         apple.reset()
-        self.assertEqual(apple.position, self._ref_position)
+        self.assertNotEqual(apple.position, self._ref_position)
 
 if __name__ == "__main__":
     unittest.main()
