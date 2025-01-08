@@ -6,6 +6,8 @@
 import unittest
 import pygame
 
+from tests.color import *
+
 from snake import *
 
 class test_snake(unittest.TestCase):        
@@ -153,29 +155,23 @@ class test_snake(unittest.TestCase):
             self.assertNotEqual(snake.direction, key_event)
 
     def test_update(self):
-        """Test 'update'method"""
-        bkgrd_color = pygame.color.Color('black') 
-        head_color = pygame.color.Color('darkgreen')
-        body_color = pygame.color.Color('green')
-        apple_color = pygame.color.Color('red')
-        wall_color = pygame.color.Color('dimgrey')
-
-        for color in [bkgrd_color, head_color, body_color, apple_color, wall_color]:
-            snake = Snake(self._sprite_size, head_color, body_color, apple_color, wall_color)
+        """Test 'update'method"""        
+        for color in Color:
+            snake = Snake(self._sprite_size, Color.HEAD.value, Color.BODY.value, Color.APPLE.value, Color.WALL.value)
             snake_len = len(snake.snake[:])
         
             # Reset background color
-            self._screen.fill(color)
+            self._screen.fill(color.value)
             result = snake.update()
 
             # Collision
-            if self._screen.get_at(snake.snake[-1]) in [body_color, wall_color]:
+            if self._screen.get_at(snake.snake[-1]) in [Color.BODY.value, Color.WALL.value]:
                 self.assertFalse(result)
             else:
                 self.assertTrue(result)
 
             # Grow snake
-            if self._screen.get_at(snake.snake[-1]) == apple_color:
+            if self._screen.get_at(snake.snake[-1]) == Color.APPLE.value:
                 self.assertEqual(len(snake.snake[:]), snake_len+1)
             else:
                 self.assertEqual(len(snake.snake[:]), snake_len)
