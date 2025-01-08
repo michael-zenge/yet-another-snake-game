@@ -8,40 +8,44 @@ from apple import *
 from snake import *
 
 class SnakeQLearning:
-    def __init__(self, apple_sprite:Apple, snake_sprite:Snake, exploration_rate=0.2, learning_rate=0.2, discount_factor=0.5):
+    def __init__(self, apple_sprite:Apple, snake_sprite:Snake, exploration_rate=0.2, learning_rate=0.2, discount_factor=0.5, random_seed:int=None):
         self._apple = apple_sprite
         self._snake = snake_sprite
         
-        self._exploration_rate = exploration_rate
+        self._exploration_rate = exploration_rate        
 
         # Q-learning
         self._learning_rate = learning_rate # alpa
         self._discount_factor = discount_factor # gamma
-        self._quality_table = np.zeros((4096,4)) # Upper limit of 4096 states (actual number of states much lower); 4 possible actions
+        
+        self._random_seed = random_seed
+        if random_seed != None:
+            np.random.seed(random_seed)
+            self._quality_table = np.random.rand(4096,4)
+        else:
+            self._quality_table = np.zeros((4096,4)) # Upper limit of 4096 states (actual number of states much lower); 4 possible actions
         
         self._actions = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_DOWN, pygame.K_UP]
 
         self._state_idx = 0
-        self._action_idx = 0
-
-        self._episode = 1
-        self._step = 0                
+        self._action_idx = 0          
 
     def update(self):    
-        self._step += 1    
         self._state_idx = self._get_state_idx()        
         self._snake.do(self._action())
 
     def reward(self):
         new_state_idx = self._get_state_idx()
         reward = self._get_reward(new_state_idx, self._action_idx)        
-        self._update_quality_table(self._state_idx, new_state_idx, self._action_idx, reward, self._learning_rate, self._discount_factor)        
-        print("[",self._episode, self._step, "] >> [state, action, new_state, reward]:", [self._state_idx, self._action_idx, new_state_idx, reward])
+        
+        # Update quality table
+        alpha = self._learning_rate
+        gamma = self._discount_factor
 
-    def _update_quality_table(self, state_idx, new_state_idx, action_idx, reward, alpha, gamma):
-        self._quality_table[state_idx][action_idx] = (1 - alpha) * self._quality_table[state_idx][action_idx]
-        self._quality_table[state_idx][action_idx] += alpha * reward + alpha * gamma * self._get_max_reward(new_state_idx)
-
+        self._quality_table[self._state_idx][self._action_idx] = (1 - alpha) * self._quality_table[self._state_idx][self._action_idx]
+        self._quality_table[self._state_idx][self._action_idx] += alpha * reward + alpha * gamma * self._get_max_reward(new_state_idx)
+        return reward
+    
     def _get_max_reward(self, state_idx):
         return max(self._quality_table[state_idx][:])
 
@@ -60,9 +64,7 @@ class SnakeQLearning:
             # Reset and (re)-draw sprites
             for sprite in [self._apple, self._snake]:
                 sprite.reset()                    
-                sprite.draw()
-            self._episode += 1
-            self._step = 0
+                sprite.draw()            
             return -10                
         elif (new_state_idx - offset_idx) >= 256: # Found apple
             return 10
@@ -72,7 +74,8 @@ class SnakeQLearning:
             else:
                 return -1
 
-    def _action(self):        
+    def _action(self):
+        random.seed(self._random_seed)
         if random.random() < self._exploration_rate:
             self._action_idx = random.randint(0,len(self._actions)-1)
         else:
