@@ -8,16 +8,17 @@ from apple import *
 from snake import *
 
 class SnakeQLearning:
-    def __init__(self, apple_sprite:Apple, snake_sprite:Snake, exploration_rate=0.2, learning_rate=0.2, discount_factor=0.5, random_seed:int=None):
+    def __init__(self, apple_sprite:Apple, snake_sprite:Snake, learning_episodes = 200, exploration_rate=0.2, learning_rate=0.2, discount_factor=0.5, random_seed:int=None):
         self._apple = apple_sprite
         self._snake = snake_sprite
         
+        self._learning_episodes = learning_episodes
         self._exploration_rate = exploration_rate        
 
         # Q-learning
         self._learning_rate = learning_rate # alpa
-        self._discount_factor = discount_factor # gamma
-        
+        self._discount_factor = discount_factor # gamma        
+
         self._random_seed = random_seed
         if random_seed != None:
             np.random.seed(random_seed)
@@ -28,9 +29,14 @@ class SnakeQLearning:
         self._actions = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_DOWN, pygame.K_UP]
 
         self._state_idx = 0
-        self._action_idx = 0          
+        self._action_idx = 0
 
-    def update(self):    
+        self._episode = 1
+        self._step = 0
+        self._total_reward = 0    
+
+    def update(self):
+        self._step += 1
         self._state_idx = self._get_state_idx()        
         self._snake.do(self._action())
 
@@ -38,12 +44,19 @@ class SnakeQLearning:
         new_state_idx = self._get_state_idx()
         reward = self._get_reward(new_state_idx, self._action_idx)        
         
-        # Update quality table
-        alpha = self._learning_rate
-        gamma = self._discount_factor
+        if self._episode < self._learning_episodes:
+            # Update quality table
+            alpha = self._learning_rate
+            gamma = self._discount_factor
 
-        self._quality_table[self._state_idx][self._action_idx] = (1 - alpha) * self._quality_table[self._state_idx][self._action_idx]
-        self._quality_table[self._state_idx][self._action_idx] += alpha * reward + alpha * gamma * self._get_max_reward(new_state_idx)
+            self._quality_table[self._state_idx][self._action_idx] = (1 - alpha) * self._quality_table[self._state_idx][self._action_idx]
+            self._quality_table[self._state_idx][self._action_idx] += alpha * reward + alpha * gamma * self._get_max_reward(new_state_idx)
+        else:
+            self._exploration_rate = 0.0
+        
+        self._total_reward += reward
+        print("Learning:", (self._exploration_rate > 0.0), "| Episode, Step, Reward:", self._episode, self._step, self._total_reward)
+        
         return reward
     
     def _get_max_reward(self, state_idx):
@@ -64,7 +77,11 @@ class SnakeQLearning:
             # Reset and (re)-draw sprites
             for sprite in [self._apple, self._snake]:
                 sprite.reset()                    
-                sprite.draw()            
+                sprite.draw()
+            # Reset tracking
+            self._episode += 1
+            self._step = 0
+            self._total_reward = 0         
             return -10                
         elif (new_state_idx - offset_idx) >= 256: # Found apple
             return 10

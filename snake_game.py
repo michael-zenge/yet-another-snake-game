@@ -33,7 +33,7 @@ class SnakeApp:
         self._learning = True
         
         self._running = True
-        self._updating = True        
+        self._updating = True   
 
         if not self._learning:
             pygame.display.set_caption("Yet Another Snake Game")
