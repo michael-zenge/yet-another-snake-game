@@ -1,8 +1,8 @@
 # Yet Another Snake Game feat. Q-Learning by Michael Zenge
 import pygame
 
-from snake import *
-from apple import *
+from snake import Snake
+from apple import Apple
 
 from q_learning import SnakeQLearning
 

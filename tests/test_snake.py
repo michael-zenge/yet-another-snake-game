@@ -6,9 +6,9 @@
 import unittest
 import pygame
 
-from tests.color import *
+from tests.color import Color
 
-from snake import *
+from snake import Snake
 
 class test_snake(unittest.TestCase):        
     def setUp(self):

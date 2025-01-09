@@ -6,10 +6,10 @@
 import unittest
 import pygame
 
-from apple import *
-from snake import * 
+from apple import Apple
+from snake import Snake
 
-from tests.color import *
+from tests.color import Color
 
 from q_learning import SnakeQLearning
 

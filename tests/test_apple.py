@@ -6,7 +6,7 @@
 import unittest
 import pygame
 
-from apple import *
+from apple import Apple
 
 class test_apple(unittest.TestCase):        
     def setUp(self):        

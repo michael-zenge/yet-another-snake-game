@@ -2,10 +2,11 @@
 # Reference: https://en.wikipedia.org/wiki/Q-learning
 
 import pygame
+import random
 import numpy as np
 
-from apple import *
-from snake import *
+from apple import Apple
+from snake import Snake
 
 class SnakeQLearning:
     def __init__(self, apple_sprite:Apple, snake_sprite:Snake, learning_episodes = 200, exploration_rate=0.2, learning_rate=0.2, discount_factor=0.5, random_seed:int=None):
@@ -20,7 +21,7 @@ class SnakeQLearning:
         self._discount_factor = discount_factor # gamma        
 
         self._random_seed = random_seed
-        if random_seed != None:
+        if random_seed is not None:
             np.random.seed(random_seed)
             self._quality_table = np.random.rand(4096,4)
         else:
