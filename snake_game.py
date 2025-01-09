@@ -89,13 +89,16 @@ class SnakeApp:
             bkgrd_coord = (2*self._sprite_size[0], 2*self._sprite_size[1])
             bkgrd_size = (self._screen_size[0]-4*self._sprite_size[0], self._screen_size[1]-4*self._sprite_size[1])
 
-            self._screen.fill(self._wall_color)
+            surface = pygame.surface.Surface(self._screen_size)
+            surface.fill(self._wall_color)
             screen_bkgrd = pygame.Rect(bkgrd_coord, bkgrd_size)
-            pygame.draw.rect(self._screen, self._bkgrd_color, screen_bkgrd)
+            pygame.draw.rect(surface, self._bkgrd_color, screen_bkgrd)
+
+            self._screen.blit(surface, (0, 0))
 
             for sprite in self._sprites:
-                sprite.draw()
-               
+                sprite.draw()         
+            
             pygame.display.update()
 
 if __name__ == '__main__':
