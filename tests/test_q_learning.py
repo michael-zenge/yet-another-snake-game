@@ -20,7 +20,9 @@ class test_q_learning(unittest.TestCase):
         self._screen_size = (20 * self._sprite_size[0], 16 * self._sprite_size[1])
         self._screen = pygame.display.set_mode(self._screen_size)
 
-        self._apple = Apple(self._sprite_size, Color.APPLE.value, 1000)
+        self._apple = Apple(self._sprite_size, Color.APPLE.value)
+        self._apple.reset(self._screen_size, 1000)
+
         self._snake = Snake(
             self._sprite_size,
             Color.HEAD.value,
@@ -28,6 +30,7 @@ class test_q_learning(unittest.TestCase):
             Color.APPLE.value,
             Color.WALL.value,
         )
+        self._snake.reset(self._screen_size)
 
         return super().setUp()
 
@@ -126,13 +129,13 @@ class test_q_learning(unittest.TestCase):
     def test_get_state_idx(self):
         """Test state depending on relative positions of snake and apple only"""
         env = SnakeQLearning(self._apple, self._snake)
-        self._apple.reset(3000)
+        self._apple.reset(self._screen_size, 3000)
         self.assertEqual(env._get_state_idx(), 0)
-        self._apple.reset(2000)
+        self._apple.reset(self._screen_size, 2000)
         self.assertEqual(env._get_state_idx(), 1024)
-        self._apple.reset(1000)
+        self._apple.reset(self._screen_size, 1000)
         self.assertEqual(env._get_state_idx(), 2048)
-        self._apple.reset(100)
+        self._apple.reset(self._screen_size, 100)
         self.assertEqual(env._get_state_idx(), 3072)
 
     def test_get_state_idx_with_offset(self):
@@ -140,7 +143,7 @@ class test_q_learning(unittest.TestCase):
         env = SnakeQLearning(self._apple, self._snake)
         for color in Color:
             self._screen.fill(color.value)
-            self._snake.draw()
+            self._snake.draw(self._screen)
             match color:
                 case Color.WALL:
                     self.assertEqual(env._get_state_idx_with_offset(0, 0, 0), 3)

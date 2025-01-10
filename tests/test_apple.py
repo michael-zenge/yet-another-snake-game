@@ -11,15 +11,15 @@ from apple import Apple
 
 class test_apple(unittest.TestCase):
     def setUp(self):
-        self._sprite_size = (16, 16)
+        self._sprite_size = (int(16), int(16))
         self._screen_size = (20 * self._sprite_size[0], 16 * self._sprite_size[1])
         self._screen = pygame.display.set_mode(self._screen_size)
 
         self._random_seed = 1000
         self._default_color = "red"
         self._ref_position = (
-            240,
-            192,
+            2 * self._sprite_size[0],
+            2 * self._sprite_size[1],
         )  # position if initialized with random seed = 1000
         return super().setUp()
 
@@ -54,7 +54,7 @@ class test_apple(unittest.TestCase):
 
     def test_position(self):
         """Test reference position after initialization"""
-        apple = Apple(self._sprite_size, self._default_color, self._random_seed)
+        apple = Apple(self._sprite_size, self._default_color)
         self.assertEqual(apple.position, self._ref_position)
 
     def test_do(self):
@@ -64,16 +64,16 @@ class test_apple(unittest.TestCase):
 
     def test_draw(self):
         """Test whether apple is drawn at respective position"""
-        apple = Apple(self._sprite_size, self._default_color, self._random_seed)
-        apple.draw()
+        apple = Apple(self._sprite_size, self._default_color)
+        apple.draw(self._screen)
         self.assertEqual(self._screen.get_at(apple.position), apple.color)
 
     def test_update(self):
         """Test whether position of apple is updated"""
-        apple = Apple(self._sprite_size, self._default_color, self._random_seed)
+        apple = Apple(self._sprite_size, self._default_color)
 
-        apple.draw()
-        success = apple.update()
+        apple.draw(self._screen)
+        success = apple.update(self._screen)
 
         # Function always returns 'True'
         self.assertTrue(success)
@@ -81,7 +81,7 @@ class test_apple(unittest.TestCase):
         self.assertEqual(apple.position, self._ref_position)
 
         self._screen.set_at(apple.position, "black")
-        success = apple.update()
+        success = apple.update(self._screen)
 
         # Function always returns 'True'
         self.assertTrue(success)
@@ -90,8 +90,8 @@ class test_apple(unittest.TestCase):
 
     def test_reset(self):
         """Test whether position is properly reset"""
-        apple = Apple(self._sprite_size, self._default_color, self._random_seed)
-        apple.reset()
+        apple = Apple(self._sprite_size, self._default_color)
+        apple.reset(self._screen_size)
         self.assertNotEqual(apple.position, self._ref_position)
 
 

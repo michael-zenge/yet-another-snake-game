@@ -4,7 +4,7 @@ import random
 
 
 class Apple:
-    def __init__(self, sprite_size, apple_color="red", random_seed: int = None):
+    def __init__(self, sprite_size, apple_color="red"):
         self._sprite_size = sprite_size
         self._apple_color = pygame.color.Color(apple_color)
 
@@ -15,8 +15,11 @@ class Apple:
         self._image = pygame.Surface(self._sprite_size)
         self._image.fill(self._apple_color)
 
-        self._position = (0, 0)
-        self.reset(random_seed)  # random seed used for testing
+        # Offset considering wall thickness
+        self._offset_x = 2 * self._sprite_size[0]
+        self._offset_y = 2 * self._sprite_size[1]
+
+        self._position = (self._offset_x, self._offset_y)
 
     @property
     def color(self):
@@ -29,25 +32,25 @@ class Apple:
     def do(self, event_key):
         pass
 
-    def draw(self):
-        self._screen.blit(self._image, self.position)
+    def draw(self, screen: pygame.surface.Surface) -> None:
+        screen.blit(self._image, self.position)
 
-    def update(self):
+    def update(self, screen: pygame.surface.Surface) -> None:
         # Reset position if eaten by snake
-        if self._screen.get_at(self.position) != self.color:
-            self.reset()
+        if screen.get_at(self.position) != self.color:
+            self.reset(screen.get_size())
         return True
 
-    def reset(self, random_seed: int = None):
+    def reset(self, screen_size: tuple[int, int], random_seed: int = None) -> None:
         random.seed(random_seed)
         pos_x = random.randrange(
-            2 * self._sprite_size[0],
-            self._screen_size[0] - 2 * self._sprite_size[0],
+            self._offset_x,
+            screen_size[0] - 2 * self._sprite_size[0],
             self._sprite_size[0],
         )
         pos_y = random.randrange(
-            2 * self._sprite_size[1],
-            self._screen_size[1] - 2 * self._sprite_size[1],
+            self._offset_y,
+            screen_size[1] - 2 * self._sprite_size[1],
             self._sprite_size[1],
         )
         self._position = (pos_x, pos_y)

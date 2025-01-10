@@ -26,21 +26,23 @@ class SnakeApp:
         self._head_color = pygame.color.Color("darkgreen")
         self._body_color = pygame.color.Color("green")
 
-        self._sprites = []
-        self._sprites.append(
-            Apple(self._sprite_size, self._apple_color)
-        )  # add apple first to avoid drawing over snake
-        self._sprites.append(
-            Snake(
-                self._sprite_size,
-                self._head_color,
-                self._body_color,
-                self._apple_color,
-                self._wall_color,
-                5,
-                0.0,
-            )
+        apple = Apple(self._sprite_size, self._apple_color)
+        apple.reset(self._screen_size)
+
+        snake = Snake(
+            self._sprite_size,
+            self._head_color,
+            self._body_color,
+            self._apple_color,
+            self._wall_color,
+            5,
+            0.0,
         )
+        snake.reset(self._screen_size)
+
+        self._sprites = []
+        self._sprites.append(apple)  # add apple first to avoid drawing over snake
+        self._sprites.append(snake)
 
         self._env = SnakeQLearning(self._sprites[0], self._sprites[1])
         self._learning = True
@@ -85,7 +87,7 @@ class SnakeApp:
                 self._env.update()
 
             for sprite in self._sprites:
-                success = sprite.update()
+                success = sprite.update(self._screen)
                 if not success and not self._learning:
                     self._running = False
                     pygame.quit()  # does not exit the program, safe to call more than once
@@ -113,7 +115,7 @@ class SnakeApp:
             self._screen.blit(surface, (0, 0))
 
             for sprite in self._sprites:
-                sprite.draw()
+                sprite.draw(self._screen)
 
             pygame.display.update()
 

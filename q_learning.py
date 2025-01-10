@@ -39,6 +39,8 @@ class SnakeQLearning:
                 (4096, 4)
             )  # Upper limit of 4096 states (actual number of states much lower); 4 possible actions
 
+        self._screen = pygame.display.get_surface()
+
         self._actions = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_DOWN, pygame.K_UP]
 
         self._state_idx = 0
@@ -110,8 +112,8 @@ class SnakeQLearning:
         if (new_state_idx - offset_idx) >= 512:  # Collision with wall or body
             # Reset and (re)-draw sprites
             for sprite in [self._apple, self._snake]:
-                sprite.reset()
-                sprite.draw()
+                sprite.reset(self._screen.get_size())
+                sprite.draw(self._screen)
             # Reset tracking
             self._episode += 1
             self._step = 0

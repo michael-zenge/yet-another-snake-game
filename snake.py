@@ -22,9 +22,6 @@ class Snake:
         self._save_update = save_update  # avoid direction conflicts
         self._direction = 0
 
-        self._screen = pygame.display.get_surface()
-        self._screen_size = self._screen.get_size()
-
         self._head_color = pygame.color.Color(head_color)
         self._head = pygame.Surface(self._sprite_size)
         self._head.fill(self._head_color)
@@ -35,7 +32,6 @@ class Snake:
 
         # Create sprite object
         self.snake = []
-        self.reset()
 
     @property
     def sprite_size(self):
@@ -69,13 +65,13 @@ class Snake:
         else:
             self._direction = new_direction
 
-    def reset(self):
+    def reset(self, screen_size: tuple[int, int]) -> None:
         self.snake.clear()
         for ii in range(0, 5):
             self.snake.append(
                 (
-                    int(self._screen_size[0] / 4 + ii * self._sprite_size[0]),
-                    int(self._screen_size[1] / 2),
+                    int(screen_size[0] / 4 + ii * self._sprite_size[0]),
+                    int(screen_size[1] / 2),
                 )
             )
         self._direction = pygame.K_RIGHT  # force update
@@ -84,15 +80,15 @@ class Snake:
         if event_key in {pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT}:
             self.direction = event_key
 
-    def update(self):
+    def update(self, screen: pygame.surface.Surface) -> None:
         # Move snake
         self.move()
 
-        if self._screen.get_at(self.snake[-1]) in [self._body_color, self._wall_color]:
+        if screen.get_at(self.snake[-1]) in [self._body_color, self._wall_color]:
             return False
 
         # Eat apple
-        if self._screen.get_at(self.snake[-1]) == self._apple_color:
+        if screen.get_at(self.snake[-1]) == self._apple_color:
             self.snake.insert(0, (self.snake[0]))  # grow snake
             self._speed += self._speed_inc
 
@@ -101,16 +97,16 @@ class Snake:
 
         return True
 
-    def draw(self):
+    def draw(self, screen: pygame.surface.Surface) -> None:
         for pos in self.snake[0:-1]:
-            self._screen.blit(self._body, pos)
+            screen.blit(self._body, pos)
         # Do not draw head over apple or wall
-        if self._screen.get_at(self.snake[-1]) not in [
+        if screen.get_at(self.snake[-1]) not in [
             self._body_color,
             self._wall_color,
             self._apple_color,
         ]:
-            self._screen.blit(self._head, self.snake[-1])
+            screen.blit(self._head, self.snake[-1])
 
     def move(self):
         if self.direction == pygame.K_RIGHT:

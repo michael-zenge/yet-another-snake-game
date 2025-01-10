@@ -91,6 +91,7 @@ class test_snake(unittest.TestCase):
         snake = Snake(
             self._sprite_size, "darkgreen", "green", "red", "dimgrey", save_update=False
         )
+        snake.reset(self._screen_size)  # position snake on screen
 
         # Snake shall move in right direction after initialization
         self.assertEqual(snake.direction, pygame.K_RIGHT)
@@ -114,6 +115,7 @@ class test_snake(unittest.TestCase):
         snake = Snake(
             self._sprite_size, "darkgreen", "green", "red", "dimgrey", save_update=True
         )
+        snake.reset(self._screen_size)  # position snake on screen
 
         # Snake shall move in right direction after initialization
         self.assertEqual(snake.direction, pygame.K_RIGHT)
@@ -160,7 +162,7 @@ class test_snake(unittest.TestCase):
         snake.direction = pygame.K_UP
         snake.direction = pygame.K_LEFT
         # Reset
-        snake.reset()
+        snake.reset(self._screen_size)
         # Test
         for ii in range(0, 5):
             self.assertEqual(
@@ -192,11 +194,12 @@ class test_snake(unittest.TestCase):
                 Color.APPLE.value,
                 Color.WALL.value,
             )
+            snake.reset(self._screen_size)  # position snake on screen
             snake_len = len(snake.snake[:])
 
             # Reset background color
             self._screen.fill(color.value)
-            result = snake.update()
+            result = snake.update(self._screen)
 
             # Collision
             if self._screen.get_at(snake.snake[-1]) in [
@@ -225,10 +228,11 @@ class test_snake(unittest.TestCase):
             snake = Snake(
                 self._sprite_size, head_color, body_color, apple_color, wall_color
             )
+            snake.reset(self._screen_size)  # position snake on screen
 
             # Reset background color
             self._screen.fill(bkgrd_color)
-            snake.draw()
+            snake.draw(self._screen)
 
             # Test color of body elements at position
             for pos in snake.snake[0:-1]:
@@ -244,9 +248,11 @@ class test_snake(unittest.TestCase):
     def test_move(self):
         """Test 'move' method"""
         snake = Snake(self._sprite_size, "darkgreen", "green", "red", "dimgrey")
+        snake.reset(self._screen_size)  # position snake on screen
 
         for direction in {pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT}:
             new_snake = Snake(self._sprite_size, "darkgreen", "green", "red", "dimgrey")
+            new_snake.reset(self._screen_size)  # position snake on screen
             new_snake.direction = direction
 
             new_snake.move()
