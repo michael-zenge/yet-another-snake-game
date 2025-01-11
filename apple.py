@@ -7,10 +7,7 @@ class Apple:
     def __init__(self, sprite_size, apple_color="red"):
         self._sprite_size = sprite_size
         self._apple_color = pygame.color.Color(apple_color)
-
-        self._screen = pygame.display.get_surface()
-        self._screen_size = self._screen.get_size()
-
+        
         # Create sprite object
         self._image = pygame.Surface(self._sprite_size)
         self._image.fill(self._apple_color)
