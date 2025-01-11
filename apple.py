@@ -7,7 +7,7 @@ class Apple:
     def __init__(self, sprite_size, apple_color="red"):
         self._sprite_size = sprite_size
         self._apple_color = pygame.color.Color(apple_color)
-        
+
         # Create sprite object
         self._image = pygame.Surface(self._sprite_size)
         self._image.fill(self._apple_color)
@@ -32,7 +32,7 @@ class Apple:
     def draw(self, screen: pygame.surface.Surface) -> None:
         screen.blit(self._image, self.position)
 
-    def update(self, screen: pygame.surface.Surface) -> None:
+    def update(self, screen: pygame.surface.Surface) -> bool:
         # Reset position if eaten by snake
         if screen.get_at(self.position) != self.color:
             self.reset(screen.get_size())

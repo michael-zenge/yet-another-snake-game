@@ -14,7 +14,7 @@ class SnakeQLearning:
         self,
         apple_sprite: Apple,
         snake_sprite: Snake,
-        learning_episodes=200,
+        learning_episodes=500,
         exploration_rate=0.2,
         learning_rate=0.2,
         discount_factor=0.5,
@@ -40,6 +40,7 @@ class SnakeQLearning:
             )  # Upper limit of 4096 states (actual number of states much lower); 4 possible actions
 
         self._screen = pygame.display.get_surface()
+        self._display_active = pygame.display.get_active()
 
         self._actions = [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_DOWN, pygame.K_UP]
 
@@ -50,6 +51,9 @@ class SnakeQLearning:
         self._step = 0
         self._total_reward = 0
 
+    def is_learning(self) -> bool:
+        return self._episode < self._learning_episodes
+
     def update(self):
         self._step += 1
         self._state_idx = self._get_state_idx()
@@ -59,7 +63,7 @@ class SnakeQLearning:
         new_state_idx = self._get_state_idx()
         reward = self._get_reward(new_state_idx, self._action_idx)
 
-        if self._episode < self._learning_episodes:
+        if self.is_learning():
             # Update quality table
             alpha = self._learning_rate
             gamma = self._discount_factor
@@ -71,18 +75,8 @@ class SnakeQLearning:
                 alpha * reward + alpha * gamma * self._get_max_reward(new_state_idx)
             )
         else:
+            # No exploration after learning completed
             self._exploration_rate = 0.0
-
-        self._total_reward += reward
-        print(
-            "Learning:",
-            (self._exploration_rate > 0.0),
-            "| Episode, Step, Reward:",
-            self._episode,
-            self._step,
-            self._total_reward,
-        )
-
         return reward
 
     def _get_max_reward(self, state_idx):
@@ -109,26 +103,40 @@ class SnakeQLearning:
     def _get_reward_with_location_offset(
         self, new_state_idx, action_idx, ref_action1, ref_action2, offset_idx
     ):
-        if (new_state_idx - offset_idx) >= 512:  # Collision with wall or body
+        if (new_state_idx - offset_idx) >= 512:
             # Reset and (re)-draw sprites
             for sprite in [self._apple, self._snake]:
                 sprite.reset(self._screen.get_size())
                 sprite.draw(self._screen)
-            # Reset tracking
-            self._episode += 1
-            self._step = 0
-            self._total_reward = 0
-            return -10
-        elif (new_state_idx - offset_idx) >= 256:  # Found apple
-            return 10
+            reward = -10  # Collision with wall or body
+        elif (new_state_idx - offset_idx) >= 256:
+            reward = 10  # Found apple
         else:
             if self._actions[action_idx] in [
                 ref_action1,
                 ref_action2,
-            ]:  # Move towards apple
-                return 1
+            ]:
+                reward = 1  # Move towards apple
             else:
-                return -1
+                reward = -1  # Move away from apple
+
+        # Log message
+        self._total_reward += reward
+        print(
+            "Learning:",
+            (self._exploration_rate > 0.0),
+            "| Episode, Step, Reward:",
+            self._episode,
+            self._step,
+            self._total_reward,
+        )
+        # New episode, reset logging
+        if reward == -10:
+            self._episode += 1
+            self._step = 0
+            self._total_reward = 0
+
+        return reward
 
     def _action(self):
         random.seed(self._random_seed)
@@ -189,7 +197,7 @@ class SnakeQLearning:
             self._snake.snake[-1][1] + offset_y,
         )
 
-        color = pygame.display.get_surface().get_at(target_coord)
+        color = self._screen.get_at(target_coord)
 
         if color == self._snake.wall_color:
             return int("11", 2) << bit_shift

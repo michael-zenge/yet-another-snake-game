@@ -86,6 +86,20 @@ class test_snake(unittest.TestCase):
         self.assertIsInstance(wall_color, pygame.color.Color)
         self.assertEqual(wall_color, pygame.color.Color(color_str))
 
+    def test_speed(self):
+        """Test getter and setter"""
+        snake = Snake(self._sprite_size, "darkgreen", "green", "red", "dimgrey")
+        self.assertEqual(snake.speed, 5.0)  # defalt value
+        snake.speed = 10.0
+        self.assertEqual(snake.speed, 10.0)  # new value
+
+    def test_speed_inc(self):
+        """Test getter and setter"""
+        snake = Snake(self._sprite_size, "darkgreen", "green", "red", "dimgrey")
+        self.assertEqual(snake.speed_inc, 0.5)  # defalt value
+        snake.speed_inc = 0.0
+        self.assertEqual(snake.speed_inc, 0.0)  # new value
+
     def test_direction_without_save_update(self):
         """Test 'direction' property without save update"""
         snake = Snake(

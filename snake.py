@@ -10,7 +10,7 @@ class Snake:
         body_color,
         apple_color,
         wall_color,
-        speed=10,
+        speed=5.0,
         speed_inc=0.5,
         save_update=False,
     ):
@@ -40,6 +40,22 @@ class Snake:
     @property
     def body_color(self):
         return self._body_color
+
+    @property
+    def speed(self) -> None:
+        return self._speed
+
+    @speed.setter
+    def speed(self, value: float) -> None:
+        self._speed = value  # framerate in fps
+
+    @property
+    def speed_inc(self) -> None:
+        return self._speed_inc
+
+    @speed_inc.setter
+    def speed_inc(self, value: float) -> None:
+        self._speed_inc = value
 
     @property
     def wall_color(self):
@@ -80,7 +96,7 @@ class Snake:
         if event_key in {pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT}:
             self.direction = event_key
 
-    def update(self, screen: pygame.surface.Surface) -> None:
+    def update(self, screen: pygame.surface.Surface) -> bool:
         # Move snake
         self.move()
 
